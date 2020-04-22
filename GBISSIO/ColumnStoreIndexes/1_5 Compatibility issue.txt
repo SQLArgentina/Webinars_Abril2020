@@ -1,0 +1,15 @@
+SET STATISTICS TIME, IO ON
+
+ALTER DATABASE [ContosoRetailDW] SET COMPATIBILITY_LEVEL = 150
+GO
+
+-- MAXDOP = 2, Batch Mode
+select sales.StoreKey, prod.ProductLabel, sum(SalesAmount)
+	from dbo.FactOnlineSales sales
+		inner join dbo.DimProduct prod
+			on sales.ProductKey = prod.ProductKey
+	where sales.UnitCost > 10
+	group by sales.StoreKey,  prod.ProductLabel
+
+ALTER DATABASE [ContosoRetailDW] SET COMPATIBILITY_LEVEL = 120
+GO

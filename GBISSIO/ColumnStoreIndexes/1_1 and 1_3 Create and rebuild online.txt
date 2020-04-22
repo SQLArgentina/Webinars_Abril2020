@@ -1,0 +1,9 @@
+alter table FactStrategyPlan drop constraint PK_FactStrategyPlan_StrategyPlanKey
+
+CREATE CLUSTERED COLUMNSTORE INDEX PK_FactStrategyPlan_StrategyPlanKey ON FactStrategyPlan WITH (ONLINE=ON)
+
+ALTER INDEX PK_FactStrategyPlan_StrategyPlanKey ON FactStrategyPlan REBUILD with (online=ON)
+
+DROP INDEX PK_FactStrategyPlan_StrategyPlanKey ON FactStrategyPlan
+
+alter table FactStrategyPlan add constraint PK_FactStrategyPlan_StrategyPlanKey primary key(Plan_StrategyPlanKey)

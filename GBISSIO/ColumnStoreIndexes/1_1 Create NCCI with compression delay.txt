@@ -1,0 +1,31 @@
+CREATE TABLE [dbo].[FactOnlineSales_NCCI](
+	[OnlineSalesKey] [int]  NOT NULL,
+	[DateKey] [datetime] NOT NULL,
+	[StoreKey] [int] NOT NULL,
+	[ProductKey] [int] NOT NULL,
+	[PromotionKey] [int] NOT NULL,
+	[CurrencyKey] [int] NOT NULL,
+	[CustomerKey] [int] NOT NULL,
+	[SalesOrderNumber] [nvarchar](20) NOT NULL,
+	[SalesOrderLineNumber] [int] NULL,
+	[SalesQuantity] [int] NOT NULL,
+	[SalesAmount] [money] NOT NULL,
+	[ReturnQuantity] [int] NOT NULL,
+	[ReturnAmount] [money] NULL,
+	[DiscountQuantity] [int] NULL,
+	[DiscountAmount] [money] NULL,
+	[TotalCost] [money] NOT NULL,
+	[UnitCost] [money] NULL,
+	[UnitPrice] [money] NULL,
+	[ETLLoadID] [int] NULL,
+	[LoadDate] [datetime] NULL,
+	[UpdateDate] [datetime] NULL,
+	index NCCI_Test Nonclustered Columnstore (OnlineSalesKey, DateKey, StoreKey, ProductKey, PromotionKey, CurrencyKey, CustomerKey, SalesOrderNumber, SalesOrderLineNumber, SalesQuantity, SalesAmount, ReturnQuantity, ReturnAmount, DiscountQuantity, DiscountAmount, TotalCost, UnitCost, UnitPrice, ETLLoadID, LoadDate, UpdateDate)
+) ON [PRIMARY]
+
+GO
+
+-- Set up the Compression delay to 30 Minutes
+alter index NCCI_Test
+	on dbo.FactOnlineSales_NCCI
+     set ( COMPRESSION_DELAY = 30 Minutes );

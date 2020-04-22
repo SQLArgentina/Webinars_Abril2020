@@ -1,0 +1,4 @@
+dbcc show_statistics (FactOnlineSales,[PK_FactOnlineSales]) with stats_stream
+
+DBCC CLONEDATABASE (ContosoRetailDW, ContosoRetailDW_Clone) 
+GO 

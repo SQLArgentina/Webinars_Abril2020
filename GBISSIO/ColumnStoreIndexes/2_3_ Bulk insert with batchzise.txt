@@ -1,0 +1,51 @@
+--Create table
+
+CREATE TABLE [dbo].[Sales_Gonzalo](
+   [Region] [varchar](50) ,
+   [Country] [varchar](50) ,
+   [ItemType] [varchar](50) NULL,
+   [SalesChannel] [varchar](50) NULL,
+   [OrderPriority] [varchar](50) NULL,
+   [OrderDate]  datetime,
+   [OrderID] bigint NULL,
+   [ShipDate] datetime,
+   [UnitsSold]  float,
+   [UnitPrice] float,
+   [UnitCost] float,
+   [TotalRevenue] float,
+   [TotalCost]  float,
+   [TotalProfit] float
+)	
+
+--columnstore creation
+
+create clustered columnstore index ix_salesgonzalo on sales_gonzalo
+
+--bulk insert with batch size
+
+BULK INSERT Sales_Gonzalo
+FROM 'C:\temp\SalesRecords.csv'
+WITH (FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR='\n',
+    BATCHSIZE=1048576);	
+
+--Check rowgroup
+
+[dbo].[cstore_GetRowGroupsDetails] @tablename='Sales_Gonzalo'
+
+--Truncate table
+
+truncate table Sales_gonzalo
+
+--what happens now
+BULK INSERT Sales_Gonzalo
+FROM 'C:\temp\SalesRecords.csv'
+WITH (FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR='\n',
+    BATCHSIZE=100000);	
+
+-- Check rowgroup after insert
+
+[dbo].[cstore_GetRowGroupsDetails] @tablename='Sales_Gonzalo'

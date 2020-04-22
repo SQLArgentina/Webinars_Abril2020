@@ -1,0 +1,11 @@
+delete top (500000) from [FactOnlineSalesCCI] 
+where onlinesaleskey > 27217995
+
+update top (500000)  [FactOnlineSalesCCI]
+set promotionkey=1
+where onlinesaleskey > 27217995
+
+[dbo].[cstore_GetRowGroupsDetails] @tablename='FactOnlineSalesCCI'
+
+alter index PK_FactOnlineSales_CCI on [FactOnlineSales_CCI] rebuild
+

@@ -1,0 +1,52 @@
+-- Create an empty test table with Clustered Columnstore
+CREATE TABLE [dbo].[FactOnlineSales_CCI](
+     [OnlineSalesKey] [int] NOT NULL,
+     [StoreKey] [int] NOT NULL,
+     [ProductKey] [int] NOT NULL,
+     [PromotionKey] [int] NOT NULL,
+     [CurrencyKey] [int] NOT NULL,
+     [CustomerKey] [int] NOT NULL,
+     INDEX PK_FactOnlineSales_CCI CLUSTERED COLUMNSTORE 
+);
+  
+set statistics time, io on;
+ 
+-- This query is loading 10 Million Rows and it should take around 30 Seconds
+insert into [dbo].[FactOnlineSales_CCI]  
+                        (
+                        OnlineSalesKey, StoreKey, ProductKey, PromotionKey, CurrencyKey, CustomerKey
+                        ) 
+ 
+select distinct top 10000000 OnlineSalesKey,  store.StoreKey, sales.ProductKey, PromotionKey, CurrencyKey, CustomerKey 
+  FROM [dbo].[FactOnlineSales] sales
+        inner join dbo.DimProduct prod
+                                on sales.ProductKey = prod.ProductKey
+        inner join dbo.DimStore store
+                                on sales.StoreKey = store.StoreKey
+  where prod.ProductSubcategoryKey >= 10
+                        and store.StoreManager >= 30
+  option (recompile);
+
+
+-- Check RG
+exec cstore_getRowGRoupsDetails @tableName = 'FactOnlineSales_CCI'
+
+-- *************************************************************************
+-- Truncate table
+truncate table [dbo].[FactOnlineSales_CCI];
+
+-- This query should take around 18 Seconds vs 30 Seconds before
+insert into [dbo].[FactOnlineSales_CCI] WITH (TABLOCK)
+                        (
+                        OnlineSalesKey, StoreKey, ProductKey, PromotionKey, CurrencyKey, CustomerKey
+                        ) 
+ 
+select distinct top 10000000 OnlineSalesKey,  store.StoreKey, sales.ProductKey, PromotionKey, CurrencyKey, CustomerKey 
+  FROM [dbo].[FactOnlineSales] sales
+        inner join dbo.DimProduct prod
+                                on sales.ProductKey = prod.ProductKey
+        inner join dbo.DimStore store
+                                on sales.StoreKey = store.StoreKey
+  where prod.ProductSubcategoryKey >= 10
+                        and store.StoreManager >= 30
+  option (recompile);

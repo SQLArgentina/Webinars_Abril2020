@@ -1,0 +1,4 @@
+
+EXEC sp_estimate_data_compression_savings 'dbo', 'FactInventory', NULL, NULL, 'PAGE' ; 
+
+EXEC sp_estimate_data_compression_savings 'dbo', 'FactInventory', NULL, NULL, 'COLUMNSTORE' ; 

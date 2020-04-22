@@ -1,0 +1,3 @@
+alter index PK_FactOnlineSales_CCI on [FactOnlineSales_CCI] rebuild
+
+Alter index PK_FactOnlineSales_CCI on [FactOnlineSales_CCI] REORGANIZE WITH (COMPRESS_ALL_ROW_GROUPS=ON)

@@ -1,0 +1,11 @@
+CREATE NONCLUSTERED COLUMNSTORE INDEX IX_FactStrategyPlan ON [dbo].[FactStrategyPlan] (STRATEGYPLANKEY,SCENARIOKEY) --IF YOU NEED YOU CAN USE WHERE CLAUSE 
+
+select *
+from sys.internal_partitions
+where object_id=OBJECT_ID('FactStrategyPlan')
+
+SELECT i.object_id, i.index_id, i.name, p.hobt_id, p.internal_object_type_desc  
+FROM sys.internal_partitions AS p  
+JOIN sys.indexes AS i  
+on i.object_id = p.object_id  
+WHERE p.object_id = OBJECT_ID ( 'FactStrategyPlan') ;  

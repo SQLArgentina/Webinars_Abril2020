@@ -1,0 +1,41 @@
+USE ContosoRetailDW;
+
+DROP TABLE IF EXISTS dbo.t_colstore;
+
+CREATE TABLE dbo.t_colstore (
+    c1 int NOT NULL,
+    c2 INT NOT NULL,
+    c3 char(40) NOT NULL,
+    c4 char(800) NOT NULL
+);
+
+set nocount on
+
+declare @outerloop int = 0
+declare @i int = 0
+
+while (@outerloop < 1100000)
+begin
+       Select @i = 0
+
+	   begin tran
+       while (@i < 2000)
+	   begin
+           insert t_colstore values (@i + @outerloop, @i + @outerloop, 'a', 
+                     concat (CONVERT(varchar, @i + @outerloop), (replicate ('b', 750))))
+           set @i += 1;
+       end
+	   commit
+
+       set @outerloop = @outerloop + @i
+       set @i = 0
+end
+go
+
+
+-- Creates Clustered Columnstore Index
+CREATE CLUSTERED COLUMNSTORE INDEX t_colstore_cci ON dbo.t_colstore with (maxdop = 1)
+
+--check rowgroup
+
+[dbo].[cstore_GetRowGroupsDetails] @tablename='t_colstore'

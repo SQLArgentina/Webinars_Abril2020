@@ -1,0 +1,51 @@
+-- Compare index sizes
+
+Indexes:
+
+CREATE clustered index ix_compress on FactOnlineSalesnoCCI (OnlineSalesKey) with(data_compression=PAGE)
+
+CREATE CLUSTERED COLUMNSTORE INDEX PK_FactOnlineSales on FactOnlineSales
+
+SELECT
+OBJECT_SCHEMA_NAME(i.OBJECT_ID) AS SchemaName,
+OBJECT_NAME(i.OBJECT_ID) AS TableName,
+i.name AS IndexName,
+i.index_id AS IndexID,
+8 * SUM(a.used_pages) AS 'Indexsize(KB)'
+FROM sys.indexes AS i
+JOIN sys.partitions AS p ON p.OBJECT_ID = i.OBJECT_ID AND p.index_id = i.index_id
+JOIN sys.allocation_units AS a ON a.container_id = p.partition_id
+where i.object_id in(OBJECT_ID('FactOnlineSalesnoCCI'),OBJECT_ID('FactOnlineSales'))
+GROUP BY i.OBJECT_ID,i.index_id,i.name
+ORDER BY OBJECT_NAME(i.OBJECT_ID),i.index_id
+
+-- Execute COUNT Query
+
+SET STATISTICS IO,TIME ON
+
+	SELECT COUNT(*)
+	FROM FactOnlineSales
+
+	SELECT COUNT(*)
+	FROM FactOnlineSalesnoCCI
+
+--Execute 2nd query
+
+declare @loadDate as DateTime;
+
+select @loadDate = sales.loadDate
+	from dbo.FactOnlineSales sales
+		inner join dbo.DimPromotion prom
+			on sales.PromotionKey = prom.PromotionKey
+	where prom.DiscountPercent = 0
+	order by sales.LoadDate;
+	
+declare @loadDate as DateTime;
+
+select @loadDate = sales.loadDate
+	from dbo.FactOnlineSalesnoCCI sales
+		inner join dbo.DimPromotion prom
+			on sales.PromotionKey = prom.PromotionKey
+	where prom.DiscountPercent = 0
+	order by sales.LoadDate;
+

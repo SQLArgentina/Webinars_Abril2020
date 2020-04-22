@@ -1,0 +1,7 @@
+[dbo].[cstore_GetDictionaries]
+[dbo].[cstore_GetFragmentation]
+[dbo].[cstore_GetMemory]
+[dbo].[cstore_GetRowGroups]
+[dbo].[cstore_GetRowGroupsDetails]
+[dbo].[cstore_GetSQLInfo]
+[dbo].[cstore_SuggestedTables]
